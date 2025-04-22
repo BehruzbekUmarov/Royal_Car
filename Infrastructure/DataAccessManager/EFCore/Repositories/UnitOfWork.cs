@@ -1,22 +1,36 @@
 ﻿using Application.Common.Repositories;
+using Application.Common.Repositories.Cars;
 using Infrastructure.DataAccessManager.EFCore.Context;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.DataAccessManager.EFCore.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
 	private readonly DataContext _context;
-    public UnitOfWork(DataContext context)
-    {
-        _context = context;
-    }
-    public void Save()
+	private readonly IServiceProvider _serviceProvider;
+	public UnitOfWork(DataContext context, IServiceProvider serviceProvider)
 	{
-		_context.SaveChanges();
+		_context = context;
+		_serviceProvider = serviceProvider;
 	}
 
-	public async Task SaveAsync(CancellationToken cancellationToken = default)
+	private ICarRepository? _carRepository;
+
+	public ICarRepository CarRepository
 	{
-		await _context.SaveChangesAsync(cancellationToken);
+		get
+		{
+			_carRepository ??= GetRepository<ICarRepository>();
+			return _carRepository;
+		}
 	}
+
+	public void Dispose() => _context.Dispose();
+	public void Save() => _context.SaveChanges();
+
+	public async Task SaveAsync(CancellationToken cancellationToken = default)
+		=> await _context.SaveChangesAsync(cancellationToken);
+
+	private T GetRepository<T>() where T : class => _serviceProvider.GetRequiredService<T>();
 }

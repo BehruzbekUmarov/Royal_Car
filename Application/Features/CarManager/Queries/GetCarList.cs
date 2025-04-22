@@ -50,14 +50,6 @@ public record GetCarListDto
 	public DateTime? CreatedAtUtc { get; set; }
 }
 
-public class GetCarListProfile : Profile
-{
-    public GetCarListProfile()
-    {
-        CreateMap<Car, GetCarListDto>();
-    }
-}
-
 public class GetCarListResult
 {
     public List<GetCarListDto>? Data { get; init; }

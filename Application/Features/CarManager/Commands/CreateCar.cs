@@ -1,8 +1,11 @@
 ﻿using Application.Common.Repositories;
+using Application.Common.Repositories.Cars;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace Application.Features.CarManager.Commands;
 
@@ -13,9 +16,11 @@ public class CreateCarResult
 
 public class CreateCarRequest : IRequest<CreateCarResult>
 {
-    public Manufacturers Manufacturer { get; set; }
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public Manufacturers Manufacturer { get; set; }
     public string? Model { get; set; }
-    public Colors Color { get; set; }
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public Colors Color { get; set; }
     public decimal Price { get; set; }
 }
 
@@ -41,25 +46,27 @@ public class CreateCarValidator : AbstractValidator<CreateCarRequest>
 
 public class CreateCarHandler : IRequestHandler<CreateCarRequest, CreateCarResult>
 {
-    private readonly ICommandRepository<Car> _commandRepository;
-    private readonly IUnitOfWork _unitOfWork;
+	private readonly IUnitOfWork _unitOfWork;
+	private readonly IMapper _mapper;
 
-    public CreateCarHandler(ICommandRepository<Car> commandRepository,
-        IUnitOfWork unitOfWork)
-    {
-        _commandRepository = commandRepository;
-        _unitOfWork = unitOfWork;
-    }
-    public async Task<CreateCarResult> Handle(CreateCarRequest request, CancellationToken cancellationToken)
+	public CreateCarHandler(IUnitOfWork unitOfWork,
+        IMapper mapper)
+	{
+		_unitOfWork = unitOfWork;
+        _mapper = mapper;
+	}
+	public async Task<CreateCarResult> Handle(CreateCarRequest request, CancellationToken cancellationToken)
     {
         var entity = new Car();
 
-        entity.Model = request.Model;
-        entity.Color = request.Color;
-        entity.Price = request.Price;
-        entity.Manufacturer = request.Manufacturer;
+        _mapper.Map(request, entity);
 
-        await _commandRepository.CreateAsync(entity, cancellationToken);
+        //entity.Model = request.Model;
+        //entity.Color = request.Color;
+        //entity.Price = request.Price;
+        //entity.Manufacturer = request.Manufacturer;
+
+        await _unitOfWork.CarRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveAsync(cancellationToken);
 
         return new CreateCarResult

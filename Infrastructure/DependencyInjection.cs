@@ -1,5 +1,7 @@
-﻿using Infrastructure.DataAccessManager.EFCore;
+﻿using Application.Common.Mappings;
+using Infrastructure.DataAccessManager.EFCore;
 using Infrastructure.LogManager.Serilogs;
+using Infrastructure.Mapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,6 +16,9 @@ public static class DependencyInjection
 
 		// Serilog
 		services.RegisterSerilog(configuration);
+
+		// AutoMapper
+		services.AddSingleton<IMapperService, MapperService>();
 
 		return services;
 	}

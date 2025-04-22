@@ -1,8 +1,10 @@
 ﻿using Application.Common.CQS.Commands;
 using Application.Common.CQS.Queries;
 using Application.Common.Repositories;
+using Application.Common.Repositories.Cars;
 using Infrastructure.DataAccessManager.EFCore.Context;
 using Infrastructure.DataAccessManager.EFCore.Repositories;
+using Infrastructure.DataAccessManager.EFCore.Repositories.Cars;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ public static class DI
 
 		services.AddScoped<ICommandContext, CommandContext>();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
+	    services.AddScoped<ICarRepository, CarRepository>();
 		services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
 		services.AddScoped<IQueryContext, QueryContext>();
 

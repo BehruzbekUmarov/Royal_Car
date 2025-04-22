@@ -1,4 +1,6 @@
 ﻿using Application.Common.Repositories;
+using Application.Common.Repositories.Cars;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
@@ -46,30 +48,33 @@ public class UpdateCarValidator : AbstractValidator<UpdateCarRequest>
 
 public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResult>
 {
-    private readonly ICommandRepository<Car> _repository;
+    private readonly ICarRepository _carRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public UpdateCarHandler(ICommandRepository<Car> repository,
-        IUnitOfWork unitOfWork)
-    {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
+	public UpdateCarHandler(IUnitOfWork unitOfWork, IMapper mapper)
+	{
+		_unitOfWork = unitOfWork;
+		_carRepository = _unitOfWork.CarRepository;
+		_mapper = mapper;
+	}
 
-    public async Task<UpdateCarResult> Handle(UpdateCarRequest request, CancellationToken cancellationToken)
+	public async Task<UpdateCarResult> Handle(UpdateCarRequest request, CancellationToken cancellationToken)
     {
-        var entity = await _repository.GetAsync(request.Id ?? Guid.Empty, cancellationToken);
+        var entity = await _unitOfWork.CarRepository.GetAsync(request.Id ?? Guid.Empty, cancellationToken);
 
         if (entity == null)
             throw new Exception($"Entity not found {request.Id}");
 
-        entity.Manufacturer = request.Manufacturer;
-        entity.Price = request.Price;
-        entity.UpdatedById = request.UpdatedById;
-        entity.Model = request.Model;
-        entity.Color = request.Color;
+        _mapper.Map(request, entity);
 
-        _repository.Update(entity);
+        //entity.Manufacturer = request.Manufacturer;
+        //entity.Price = request.Price;
+        //entity.UpdatedById = request.UpdatedById;
+        //entity.Model = request.Model;
+        //entity.Color = request.Color;
+
+        _unitOfWork.CarRepository.Update(entity);
         await _unitOfWork.SaveAsync(cancellationToken);
 
         return new UpdateCarResult

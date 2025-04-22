@@ -1,4 +1,5 @@
 ﻿using Application.Common.Behaviors;
+using Application.Common.Extensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ public static class DependencyInjection
 	public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 	{
 		// AutoMapper
-		services.AddAutoMapper(Assembly.GetExecutingAssembly());
+		services.RegisterMappingProfiles();
 
 		// FluentValidation
 		services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

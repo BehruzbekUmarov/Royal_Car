@@ -1,4 +1,6 @@
 ﻿using Application.Common.Repositories;
+using Application.Common.Repositories.Cars;
+using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
@@ -26,25 +28,25 @@ public class DeleteCarValidator : AbstractValidator<DeleteCarRequest>
 
 public class DeleteCarHandler : IRequestHandler<DeleteCarRequest, DeleteCarResult>
 {
-    private readonly ICommandRepository<Car> _commandRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public DeleteCarHandler(ICommandRepository<Car> commandRepository,
-        IUnitOfWork unitOfWork)
+	public DeleteCarHandler(IUnitOfWork unitOfWork,
+        IMapper mapper)
+	{
+		_unitOfWork = unitOfWork;
+		_mapper = mapper;
+	}
+	public async Task<DeleteCarResult> Handle(DeleteCarRequest request, CancellationToken cancellationToken)
     {
-        _commandRepository = commandRepository;
-        _unitOfWork = unitOfWork;
-    }
-    public async Task<DeleteCarResult> Handle(DeleteCarRequest request, CancellationToken cancellationToken)
-    {
-        var entity = await _commandRepository.GetAsync(request.Id ?? Guid.Empty, cancellationToken);
+        var entity = await _unitOfWork.CarRepository.GetAsync(request.Id ?? Guid.Empty, cancellationToken);
 
         if (entity == null)
             throw new Exception($"Entity not found: {request.Id}");
 
-        entity.UpdatedById = request.DeletedById;
+        _mapper.Map(request, entity);
 
-        _commandRepository.Delete(entity);
+        _unitOfWork.CarRepository.Delete(entity);
         await _unitOfWork.SaveAsync(cancellationToken);
 
         return new DeleteCarResult
