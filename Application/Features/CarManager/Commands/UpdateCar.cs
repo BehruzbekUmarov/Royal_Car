@@ -68,12 +68,6 @@ public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResul
 
         _mapper.Map(request, entity);
 
-        //entity.Manufacturer = request.Manufacturer;
-        //entity.Price = request.Price;
-        //entity.UpdatedById = request.UpdatedById;
-        //entity.Model = request.Model;
-        //entity.Color = request.Color;
-
         _unitOfWork.CarRepository.Update(entity);
         await _unitOfWork.SaveAsync(cancellationToken);
 
