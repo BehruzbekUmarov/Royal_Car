@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 
 namespace Application.Features.CarManager.Commands;
@@ -22,6 +23,7 @@ public class CreateCarRequest : IRequest<CreateCarResult>
 	[JsonConverter(typeof(JsonStringEnumConverter))]
 	public Colors Color { get; set; }
     public decimal Price { get; set; }
+	public IFormFile? Image { get; set; }
 }
 
 public class CreateCarValidator : AbstractValidator<CreateCarRequest>
@@ -47,24 +49,24 @@ public class CreateCarValidator : AbstractValidator<CreateCarRequest>
 public class CreateCarHandler : IRequestHandler<CreateCarRequest, CreateCarResult>
 {
 	private readonly IUnitOfWork _unitOfWork;
+    private readonly ICarImageService _imageService;
 	private readonly IMapper _mapper;
 
 	public CreateCarHandler(IUnitOfWork unitOfWork,
-        IMapper mapper)
+		IMapper mapper,
+		ICarImageService imageService)
 	{
 		_unitOfWork = unitOfWork;
-        _mapper = mapper;
+		_mapper = mapper;
+		_imageService = imageService;
 	}
 	public async Task<CreateCarResult> Handle(CreateCarRequest request, CancellationToken cancellationToken)
     {
+        var imagePath = await _imageService.SaveImageAsync(request.Image);
         var entity = new Car();
+        entity.ImagePath = imagePath;
 
         _mapper.Map(request, entity);
-
-        //entity.Model = request.Model;
-        //entity.Color = request.Color;
-        //entity.Price = request.Price;
-        //entity.Manufacturer = request.Manufacturer;
 
         await _unitOfWork.CarRepository.CreateAsync(entity, cancellationToken);
         await _unitOfWork.SaveAsync(cancellationToken);

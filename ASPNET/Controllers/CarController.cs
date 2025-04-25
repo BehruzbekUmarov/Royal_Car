@@ -22,7 +22,7 @@ public class CarController : BaseApiController
 	/// <returns>The result of the car creation operation.</returns>
 	[HttpPost("CreateCar")]
 	public async Task<ActionResult<ApiSuccessResult<CreateCarResult>>> CreateCarAsync(
-		CreateCarRequest request,
+		[FromForm] CreateCarRequest request,
 		CancellationToken cancellationToken
 		)
 	{

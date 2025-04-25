@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Features.CarManager.Commands;
 
@@ -20,7 +21,8 @@ public class UpdateCarRequest : IRequest<UpdateCarResult>
     public string? Model { get; set; }
     public Colors Color { get; set; }
     public decimal Price { get; set; }
-    public string? UpdatedById { get; set; }
+	public IFormFile? Image { get; set; }
+	public string? UpdatedById { get; set; }
 }
 
 public class UpdateCarValidator : AbstractValidator<UpdateCarRequest>
@@ -50,13 +52,15 @@ public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResul
 {
     private readonly ICarRepository _carRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICarImageService _carImageService;
     private readonly IMapper _mapper;
 
-	public UpdateCarHandler(IUnitOfWork unitOfWork, IMapper mapper)
+	public UpdateCarHandler(IUnitOfWork unitOfWork, IMapper mapper, ICarImageService carImageService)
 	{
 		_unitOfWork = unitOfWork;
 		_carRepository = _unitOfWork.CarRepository;
 		_mapper = mapper;
+		_carImageService = carImageService;
 	}
 
 	public async Task<UpdateCarResult> Handle(UpdateCarRequest request, CancellationToken cancellationToken)
@@ -66,6 +70,9 @@ public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResul
         if (entity == null)
             throw new Exception($"Entity not found {request.Id}");
 
+        var imagePath = await _carImageService.SaveImageAsync(request.Image);
+
+        entity.ImagePath = imagePath;
         _mapper.Map(request, entity);
 
         _unitOfWork.CarRepository.Update(entity);

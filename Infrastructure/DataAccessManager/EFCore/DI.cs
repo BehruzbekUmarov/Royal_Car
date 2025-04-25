@@ -24,6 +24,7 @@ public static class DI
 		services.AddScoped<ICommandContext, CommandContext>();
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 	    services.AddScoped<ICarRepository, CarRepository>();
+		services.AddScoped<ICarImageService, CarImageService>();
 		services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
 		services.AddScoped<IQueryContext, QueryContext>();
 

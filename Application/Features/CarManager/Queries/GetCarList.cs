@@ -47,6 +47,7 @@ public record GetCarListDto
 	public string? Model { get; set; }
 	public Colors Color { get; set; }
 	public decimal Price { get; set; }
+	public string? ImagePath { get; set; }
 	public DateTime? CreatedAtUtc { get; set; }
 }
 
