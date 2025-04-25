@@ -2,9 +2,11 @@
 using Application.Common.CQS.Queries;
 using Application.Common.Repositories;
 using Application.Common.Repositories.Cars;
+using Application.Common.Repositories.Files;
 using Infrastructure.DataAccessManager.EFCore.Context;
 using Infrastructure.DataAccessManager.EFCore.Repositories;
 using Infrastructure.DataAccessManager.EFCore.Repositories.Cars;
+using Infrastructure.DataAccessManager.EFCore.Repositories.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,7 @@ public static class DI
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 	    services.AddScoped<ICarRepository, CarRepository>();
 		services.AddScoped<ICarImageService, CarImageService>();
+		services.AddScoped<IFileConverterService, FileConverterService>();
 		services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
 		services.AddScoped<IQueryContext, QueryContext>();
 

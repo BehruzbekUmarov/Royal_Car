@@ -50,6 +50,8 @@ using (var scope = app.Services.CreateScope())
 	DbInitializer.SeedDatabase(dbContext);
 }
 
+app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
