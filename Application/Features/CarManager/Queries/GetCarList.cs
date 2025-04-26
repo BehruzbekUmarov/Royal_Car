@@ -1,7 +1,6 @@
 ﻿using Application.Common.CQS.Queries;
 using Application.Common.Extensions;
 using AutoMapper;
-using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

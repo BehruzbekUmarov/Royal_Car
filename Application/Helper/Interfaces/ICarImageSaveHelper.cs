@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Application.Common.Repositories.Cars;
+namespace Application.Helper.Interfaces;
 
-public interface ICarImageService
+public interface ICarImageSaveHelper
 {
 	Task<string> SaveImageAsync(IFormFile image);
 }

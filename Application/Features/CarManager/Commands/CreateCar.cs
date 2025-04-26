@@ -1,5 +1,5 @@
 ﻿using Application.Common.Repositories;
-using Application.Common.Repositories.Cars;
+using Application.Helper.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -49,20 +49,20 @@ public class CreateCarValidator : AbstractValidator<CreateCarRequest>
 public class CreateCarHandler : IRequestHandler<CreateCarRequest, CreateCarResult>
 {
 	private readonly IUnitOfWork _unitOfWork;
-    private readonly ICarImageService _imageService;
+    private readonly ICarImageSaveHelper _carImageSaveHelper;
 	private readonly IMapper _mapper;
 
 	public CreateCarHandler(IUnitOfWork unitOfWork,
 		IMapper mapper,
-		ICarImageService imageService)
+		ICarImageSaveHelper carImageSave)
 	{
 		_unitOfWork = unitOfWork;
 		_mapper = mapper;
-		_imageService = imageService;
+		_carImageSaveHelper = carImageSave;
 	}
 	public async Task<CreateCarResult> Handle(CreateCarRequest request, CancellationToken cancellationToken)
     {
-        var imagePath = await _imageService.SaveImageAsync(request.Image);
+        var imagePath = await _carImageSaveHelper.SaveImageAsync(request.Image);
         var entity = new Car();
         entity.ImagePath = imagePath;
 

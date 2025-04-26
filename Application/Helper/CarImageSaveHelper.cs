@@ -1,9 +1,9 @@
-﻿using Application.Common.Repositories.Cars;
+﻿using Application.Helper.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace Infrastructure.DataAccessManager.EFCore.Repositories.Cars;
+namespace Application.Helper;
 
-public class CarImageService : ICarImageService
+public class CarImageSaveHelper : ICarImageSaveHelper
 {
 	private readonly string _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/cars");
 

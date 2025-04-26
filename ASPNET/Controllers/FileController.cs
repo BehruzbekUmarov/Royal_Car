@@ -1,5 +1,4 @@
 ﻿using Application.Features.ConvertorManager.Commands;
-using Application.Features.ConvertorManager.Queries;
 using Application.Features.ImageConvertorManager.Commands;
 using ASPNET.Common.Base;
 using MediatR;
@@ -61,19 +60,5 @@ public class FileController : BaseApiController
 			.EndsWith(".pdf") ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 		var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
 		return File(fileBytes, mimeType, fileName);
-
-		//var request = new DownloadConvertedFileQuery
-		//{
-		//	FileName = fileName
-		//};
-
-
-		//var fileBytes = await _sender.Send(request);
-		//if (fileBytes == null)
-		//	return NotFound();
-
-		//var mimeType = fileName.EndsWith(".pdf") ? "application/pdf" :
-		//			   "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-		//return File(fileBytes, mimeType, fileName);
 	}
 }

@@ -1,6 +1,6 @@
-﻿namespace Application.Common.Repositories.Files;
+﻿namespace Application.Helper.Interfaces;
 
-public interface IFileConverterService
+public interface IFileConverterHelper
 {
 	Task<string> ConvertDocxToPdfAsync(string inputPath);
 	Task<string> ConvertPdfToDocxAsync(string inputPath);

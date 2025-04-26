@@ -1,5 +1,7 @@
 ﻿using Application.Common.Behaviors;
 using Application.Common.Extensions;
+using Application.Helper;
+using Application.Helper.Interfaces;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,10 @@ public static class DependencyInjection
 			x.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 			x.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 		});
+
+		//Register other helper services
+		services.AddScoped<ICarImageSaveHelper, CarImageSaveHelper>();
+		services.AddScoped<IFileConverterHelper, FileConverterHelper>();
 
 		// Register services in Application.Features
 		var assembly = Assembly.GetExecutingAssembly();

@@ -1,5 +1,5 @@
 ﻿using Application.Common.Repositories;
-using Application.Common.Repositories.Cars;
+using Application.Helper.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -50,17 +50,15 @@ public class UpdateCarValidator : AbstractValidator<UpdateCarRequest>
 
 public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResult>
 {
-    private readonly ICarRepository _carRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICarImageService _carImageService;
-    private readonly IMapper _mapper;
+	private readonly ICarImageSaveHelper _carImageSaveHelper;
+	private readonly IMapper _mapper;
 
-	public UpdateCarHandler(IUnitOfWork unitOfWork, IMapper mapper, ICarImageService carImageService)
+	public UpdateCarHandler(IUnitOfWork unitOfWork, IMapper mapper, ICarImageSaveHelper carImageSaveHelper)
 	{
 		_unitOfWork = unitOfWork;
-		_carRepository = _unitOfWork.CarRepository;
 		_mapper = mapper;
-		_carImageService = carImageService;
+		_carImageSaveHelper = carImageSaveHelper;
 	}
 
 	public async Task<UpdateCarResult> Handle(UpdateCarRequest request, CancellationToken cancellationToken)
@@ -70,7 +68,7 @@ public class UpdateCarHandler : IRequestHandler<UpdateCarRequest, UpdateCarResul
         if (entity == null)
             throw new Exception($"Entity not found {request.Id}");
 
-        var imagePath = await _carImageService.SaveImageAsync(request.Image);
+        var imagePath = await _carImageSaveHelper.SaveImageAsync(request.Image);
 
         entity.ImagePath = imagePath;
         _mapper.Map(request, entity);

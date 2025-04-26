@@ -1,5 +1,4 @@
 ﻿using Application.Common.Repositories;
-using Application.Common.Repositories.Cars;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;

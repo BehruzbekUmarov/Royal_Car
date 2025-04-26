@@ -1,7 +1,7 @@
-﻿using Application.Common.Repositories.Files;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Application.Helper.Interfaces;
 
 namespace Application.Features.ConvertorManager.Commands;
 
@@ -17,13 +17,13 @@ public class ConvertPdfToDocxRequest : IRequest<string>
 
 public class ConvertPdfToDocxCommandHandler : IRequestHandler<ConvertPdfToDocxRequest, string>
 {
-	private readonly IFileConverterService _fileConverterService;
+	private readonly IFileConverterHelper _fileConverterHelper;
 	private readonly IWebHostEnvironment _env;
 
-	public ConvertPdfToDocxCommandHandler(IFileConverterService fileConverterService, IWebHostEnvironment env)
+	public ConvertPdfToDocxCommandHandler(IWebHostEnvironment env, IFileConverterHelper fileConverterHelper)
 	{
-		_fileConverterService = fileConverterService;
 		_env = env;
+		_fileConverterHelper = fileConverterHelper;
 	}
 
 	public async Task<string> Handle(ConvertPdfToDocxRequest request, CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class ConvertPdfToDocxCommandHandler : IRequestHandler<ConvertPdfToDocxRe
 			await request.File.CopyToAsync(stream, cancellationToken);
 		}
 
-		var outputFilePath = await _fileConverterService.ConvertPdfToDocxAsync(inputFilePath);
+		var outputFilePath = await _fileConverterHelper.ConvertPdfToDocxAsync(inputFilePath);
 		return Path.GetFileName(outputFilePath);
 	}
 }
